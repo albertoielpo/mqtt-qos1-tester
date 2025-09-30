@@ -2,21 +2,19 @@ const mqtt = require("mqtt");
 const fs = require("fs");
 const path = require("path");
 
-// It can be override using opts.logFile
-let logFile = "./log/mqtt-client.log";
-
 class MqttClient {
+    logFile = "./log/mqtt-client.log"; // It can be override using opts.logFile
     client = null; // mqtt instance
 
     /**
      * Sanitize log in order to avoid path traversal
-     * @param {string} logFile
+     * @param {string} file
      * @param {string} baseDir
      * @returns
      */
-    sanitizeLogPath(logFile, baseDir = "./log") {
+    sanitizeLogPath(file, baseDir = "./log") {
         // Remove null bytes and control characters
-        let sanitized = logFile
+        let sanitized = file
             .replace(/\0/g, "")
             .replace(/[\x00-\x1f\x80-\x9f]/g, "");
 
@@ -53,7 +51,7 @@ class MqttClient {
         }
 
         console.log(str, data.packet?.cmd === "puback" ? "🟢" : ""); // console log
-        fs.appendFile(`${logFile}`, str + "\n", () => {}); // append to file
+        fs.appendFile(`${this.logFile}`, str + "\n", () => {}); // append to file
     }
 
     /**
@@ -62,9 +60,9 @@ class MqttClient {
      */
     constructor(opts = {}) {
         if (opts.logFile) {
-            logFile = this.sanitizeLogPath(opts.logFile);
+            this.logFile = this.sanitizeLogPath(opts.logFile);
         }
-        console.log(">> Log linked: ", logFile);
+        console.log(">> Log linked: ", this.logFile);
 
         this.log({
             event: `client-connecting`,
