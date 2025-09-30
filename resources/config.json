@@ -5,5 +5,9 @@
     "username": "",
     "password": "",
     "clientId": "",
-    "topic": "test/1"
+    "topic": "test/1",
+    "publishInterval": 10000,
+    "testDuration": 60000,
+    "logSenderFile": "mqtt-client-sender.log",
+    "logReceiverFile": "mqtt-client-receiver.log"
 }

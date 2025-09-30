@@ -1,20 +1,27 @@
 const MqttClient = require("./mqtt-client");
 const mqttClientOpts = require("./resources/config.json");
 
-const PUBLISH_INTERVAL = 5000;
-const TEST_DURATION = 60_000;
+function randId() {
+    return Math.floor(Math.random() * 1_000_000);
+}
 
 /**
  * Main wrap function
  */
 function main() {
-    const curClientId = `${mqttClientOpts.clientId}_${Math.floor(
-        Math.random() * 100000
-    )}`;
+    const publishInterval = mqttClientOpts.publishInterval || 10_000;
+    const testDuration = mqttClientOpts.testDuration || 60_000;
+
+    const curClientId = `${mqttClientOpts.clientId}_${randId()}`;
     // create new client
     const mqttClient = new MqttClient({
-        ...mqttClientOpts,
-        clientId: curClientId
+        protocol: mqttClientOpts.protocol,
+        port: mqttClientOpts.port,
+        host: mqttClientOpts.host,
+        username: mqttClientOpts.username,
+        password: mqttClientOpts.password,
+        clientId: curClientId,
+        logFile: mqttClientOpts.logSenderFile
     });
 
     // publish to a topic
@@ -23,10 +30,10 @@ function main() {
             topic: mqttClientOpts.topic,
             payload: {
                 status: "ok",
-                who: curClientId
+                payloadId: randId()
             }
         });
-    }, PUBLISH_INTERVAL);
+    }, publishInterval);
 
     // close client gracefully
     setTimeout(() => {
@@ -35,7 +42,7 @@ function main() {
         }
         // then close the connection
         mqttClient.end();
-    }, TEST_DURATION);
+    }, testDuration);
 }
 
 if (require.main === module) {

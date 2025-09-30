@@ -1,12 +1,31 @@
 const mqtt = require("mqtt");
 const fs = require("fs");
+const path = require("path");
 
-// default log file path
-const LOG_DIR = "./log";
-const LOG_FILE_NAME = process.env.LOG_FILE_NAME || "mqtt-client";
+// It can be override using opts.logFile
+let logFile = "./log/mqtt-client.log";
 
 class MqttClient {
     client = null; // mqtt instance
+
+    sanitizeLogPath(logFile, baseDir = "./log") {
+        // Remove null bytes and control characters
+        let sanitized = logFile
+            .replace(/\0/g, "")
+            .replace(/[\x00-\x1f\x80-\x9f]/g, "");
+
+        // Get just the filename if path traversal is attempted
+        const basename = path.basename(sanitized);
+
+        // Remove or replace potentially dangerous characters
+        const safe = basename.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+        // Ensure it doesn't start with a dot (hidden file)
+        const final = safe.startsWith(".") ? `log_${safe}` : safe;
+
+        // Resolve to absolute path within a safe directory
+        return path.resolve(baseDir, final);
+    }
 
     /**
      *
@@ -28,14 +47,19 @@ class MqttClient {
         }
 
         console.log(str, data.packet?.cmd === "puback" ? "🟢" : ""); // console log
-        fs.appendFile(`${LOG_DIR}/${LOG_FILE_NAME}.log`, str + "\n", () => {}); // append to file
+        fs.appendFile(`${logFile}`, str + "\n", () => {}); // append to file
     }
 
     /**
      *
-     * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string}} opts
+     * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string, logFile: string}} opts
      */
     constructor(opts = {}) {
+        if (opts.logFile) {
+            logFile = this.sanitizeLogPath(opts.logFile);
+        }
+        console.log(">> Log linked: ", logFile);
+
         this.log({
             event: `client-connecting`,
             packet: { payload: Buffer.from(opts.clientId) }

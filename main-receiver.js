@@ -1,18 +1,27 @@
 const MqttClient = require("./mqtt-client");
 const mqttClientOpts = require("./resources/config.json");
 
-const TEST_DURATION = 60_000;
+function randId() {
+    return Math.floor(Math.random() * 1_000_000);
+}
 
 /**
  * Main wrap function
  */
 function main() {
+    const testDuration = mqttClientOpts.testDuration || 60_000;
+
+    // create new client
+    const curClientId = `${mqttClientOpts.clientId}_${randId()}`;
     // create new client
     const mqttClient = new MqttClient({
-        ...mqttClientOpts,
-        clientId: `${mqttClientOpts.clientId}_${Math.floor(
-            Math.random() * 100000
-        )}`
+        protocol: mqttClientOpts.protocol,
+        port: mqttClientOpts.port,
+        host: mqttClientOpts.host,
+        username: mqttClientOpts.username,
+        password: mqttClientOpts.password,
+        clientId: curClientId,
+        logFile: mqttClientOpts.logReceiverFile
     });
 
     // subscribe to a topic
@@ -26,7 +35,7 @@ function main() {
     setTimeout(() => {
         // then close the connection
         mqttClient.end();
-    }, TEST_DURATION);
+    }, testDuration);
 }
 
 if (require.main === module) {

@@ -1,1 +1,12 @@
-// THINK ABOUT IT
+const sender = require("./main-sender.js").main;
+const receiver = require("./main-receiver.js").main;
+
+try {
+    console.log(">> start");
+    // execute in the same thread
+    sender();
+    receiver();
+} catch (error) {
+    console.log(error);
+    process.exit(1);
+}
