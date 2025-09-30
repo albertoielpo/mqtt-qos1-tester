@@ -7,14 +7,19 @@ const TEST_DURATION = 60_000;
 /**
  * Main wrap function
  */
-function sender() {
+function main() {
     // create new client
-    const mqttClient = new MqttClient(mqttClientOpts);
+    const mqttClient = new MqttClient({
+        ...mqttClientOpts,
+        clientId: `${mqttClientOpts.clientId}_${Math.floor(
+            Math.random() * 100000
+        )}`
+    });
 
     // publish to a topic
     const intervalId = setInterval(() => {
         mqttClient.publish({
-            topic: "test/1",
+            topic: mqttClientOpts.topic,
             payload: {
                 status: "ok",
                 who: mqttClientOpts.clientId
@@ -32,14 +37,15 @@ function sender() {
     }, TEST_DURATION);
 }
 
-if (require.sender === module) {
+if (require.main === module) {
     // here if is launched as a script
     try {
-        sender();
+        console.log("Main sender start as script");
+        main();
     } catch (error) {
         console.log("Exception raised: ", error);
         process.exit(1); // return 1
     }
 }
 
-module.exports = { sender };
+module.exports = { main };
