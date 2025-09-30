@@ -10,17 +10,21 @@ class MqttClient {
 
     /**
      *
-     * @param {{error: any, event: string, topic: string, payload: Buffer, packet: {cmd: string, messageId: number}}} data
+     * @param {{error: any, event: string, topic: string, packet: {cmd: string, messageId: number, payload: Buffer}}} data
      * @returns
      */
     log(data = {}) {
         let str;
         if (data.error) {
-            str = `[${new Date().toISOString()}] [error] ${data.error?.toString()}`;
+            str = `[${new Date().toISOString()}] [error] ${
+                data.error?.toString() ?? ""
+            }`;
         } else {
             str = `[${new Date().toISOString()}] [${data.event}] [${
                 data.packet?.cmd ?? ""
-            }] [${data.packet?.messageId ?? ""}]`;
+            }] [${data.packet?.messageId ?? ""}] [${
+                data.packet?.payload?.toString() ?? ""
+            }]`;
         }
 
         console.log(str, data.packet?.cmd === "puback" ? "🟢" : ""); // console log
@@ -32,7 +36,10 @@ class MqttClient {
      * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string}} opts
      */
     constructor(opts = {}) {
-        this.log({ event: "client-connecting" });
+        this.log({
+            event: `client-connecting`,
+            packet: { payload: Buffer.from(opts.clientId) }
+        });
         this.client = mqtt.connect(opts);
 
         this.client.on("connect", (packet) => {

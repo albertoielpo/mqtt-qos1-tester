@@ -4,5 +4,6 @@
     "host": "",
     "username": "",
     "password": "",
-    "clientId": ""
+    "clientId": "",
+    "topic": "test/1"
 }

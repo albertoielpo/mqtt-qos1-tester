@@ -8,12 +8,13 @@ const TEST_DURATION = 60_000;
  * Main wrap function
  */
 function main() {
+    const curClientId = `${mqttClientOpts.clientId}_${Math.floor(
+        Math.random() * 100000
+    )}`;
     // create new client
     const mqttClient = new MqttClient({
         ...mqttClientOpts,
-        clientId: `${mqttClientOpts.clientId}_${Math.floor(
-            Math.random() * 100000
-        )}`
+        clientId: curClientId
     });
 
     // publish to a topic
@@ -22,7 +23,7 @@ function main() {
             topic: mqttClientOpts.topic,
             payload: {
                 status: "ok",
-                who: mqttClientOpts.clientId
+                who: curClientId
             }
         });
     }, PUBLISH_INTERVAL);
