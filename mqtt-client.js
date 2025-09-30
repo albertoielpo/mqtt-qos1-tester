@@ -8,58 +8,6 @@ class MqttClient {
     client = null; // mqtt instance
 
     /**
-     * Sanitize log in order to avoid path traversal
-     * @param {string} file
-     * @param {string} baseDir
-     * @returns
-     */
-    sanitizeLogPath(file, baseDir = "./log") {
-        // Remove null bytes and control characters
-        let sanitized = file
-            .replace(/\0/g, "")
-            .replace(/[\x00-\x1f\x80-\x9f]/g, "");
-
-        // Get just the filename if path traversal is attempted
-        const basename = path.basename(sanitized);
-
-        // Remove or replace potentially dangerous characters
-        const safe = basename.replace(/[^a-zA-Z0-9._-]/g, "_");
-
-        // Ensure it doesn't start with a dot (hidden file)
-        const final = safe.startsWith(".") ? `log_${safe}` : safe;
-
-        // Resolve to absolute path within a safe directory
-        return path.resolve(baseDir, final);
-    }
-
-    /**
-     * Log in a centralized way
-     * @param {{error: unknown, event: string, topic: string, packet: {cmd: string, messageId: number, payload: Buffer}}} data
-     * @returns
-     */
-    log(data = {}) {
-        let str;
-        if (data.error) {
-            str = `[${new Date().toISOString()}] [error] ${
-                data.error?.toString() ?? ""
-            }`;
-        } else {
-            str = `[${new Date().toISOString()}] [${data.event}] [${
-                data.packet?.cmd ?? ""
-            }] [${data.packet?.messageId ?? ""}] [${
-                data.packet?.payload?.toString() ?? ""
-            }]`;
-        }
-
-        console.log(
-            this.consolePrefix ?? "",
-            str,
-            data.packet?.cmd === "puback" ? "🟢" : ""
-        ); // console log
-        fs.appendFile(`${this.logFile}`, str + "\n", () => {}); // append to file
-    }
-
-    /**
      * Init class
      * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string, logFile: string, consolePrefix: string}} opts
      */
@@ -76,7 +24,14 @@ class MqttClient {
             event: `client-connecting`,
             packet: { payload: Buffer.from(opts.clientId) }
         });
-        this.client = mqtt.connect(opts);
+        this.client = mqtt.connect({
+            host: opts.host,
+            protocol: opts.protocol,
+            port: opts.port,
+            username: opts.username,
+            password: opts.password,
+            clientId: opts.clientId
+        });
 
         this.client.on("connect", (packet) => {
             if (packet) {
@@ -127,6 +82,58 @@ class MqttClient {
         this.client.on("offline", () => {
             this.log({ event: "offline", packet: {} });
         });
+    }
+
+    /**
+     * Sanitize log in order to avoid path traversal
+     * @param {string} file
+     * @param {string} baseDir
+     * @returns
+     */
+    sanitizeLogPath(file, baseDir = "./log") {
+        // Remove null bytes and control characters
+        let sanitized = file
+            .replace(/\0/g, "")
+            .replace(/[\x00-\x1f\x80-\x9f]/g, "");
+
+        // Get just the filename if path traversal is attempted
+        const basename = path.basename(sanitized);
+
+        // Remove or replace potentially dangerous characters
+        const safe = basename.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+        // Ensure it doesn't start with a dot (hidden file)
+        const final = safe.startsWith(".") ? `log_${safe}` : safe;
+
+        // Resolve to absolute path within a safe directory
+        return path.resolve(baseDir, final);
+    }
+
+    /**
+     * Log in a centralized way
+     * @param {{error: unknown, event: string, topic: string, packet: {cmd: string, messageId: number, payload: Buffer}}} data
+     * @returns
+     */
+    log(data = {}) {
+        let str;
+        if (data.error) {
+            str = `[${new Date().toISOString()}] [error] ${
+                data.error?.toString() ?? ""
+            }`;
+        } else {
+            str = `[${new Date().toISOString()}] [${data.event}] [${
+                data.packet?.cmd ?? ""
+            }] [${data.packet?.messageId ?? ""}] [${
+                data.packet?.payload?.toString() ?? ""
+            }]`;
+        }
+
+        console.log(
+            this.consolePrefix ?? "",
+            str,
+            data.packet?.cmd === "puback" ? "🟢" : ""
+        ); // console log
+        fs.appendFile(`${this.logFile}`, str + "\n", () => {}); // append to file
     }
 
     /**

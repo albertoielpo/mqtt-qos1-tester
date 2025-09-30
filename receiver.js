@@ -32,6 +32,11 @@ function main() {
         consolePrefix: "[R]"
     });
 
+    process.on("SIGINT", () => {
+        mqttClient.end();
+        process.exit(0);
+    });
+
     // subscribe to a topic
     setTimeout(() => {
         mqttClient.subscribe({

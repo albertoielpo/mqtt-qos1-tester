@@ -31,6 +31,11 @@ function main() {
         consolePrefix: "[S]"
     });
 
+    process.on("SIGINT", () => {
+        mqttClient.end();
+        process.exit(0);
+    });
+
     // publish to a topic
     const intervalId = setInterval(() => {
         mqttClient.publish({
