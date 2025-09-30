@@ -11,5 +11,9 @@
   "description": "Mqtt qos 1 tester",
   "dependencies": {
     "mqtt": "~5.10.3"
+  },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
   }
 }

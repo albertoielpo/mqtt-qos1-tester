@@ -8,6 +8,12 @@ let logFile = "./log/mqtt-client.log";
 class MqttClient {
     client = null; // mqtt instance
 
+    /**
+     * Sanitize log in order to avoid path traversal
+     * @param {string} logFile
+     * @param {string} baseDir
+     * @returns
+     */
     sanitizeLogPath(logFile, baseDir = "./log") {
         // Remove null bytes and control characters
         let sanitized = logFile
@@ -28,8 +34,8 @@ class MqttClient {
     }
 
     /**
-     *
-     * @param {{error: any, event: string, topic: string, packet: {cmd: string, messageId: number, payload: Buffer}}} data
+     * Log in a centralized way
+     * @param {{error: unknown, event: string, topic: string, packet: {cmd: string, messageId: number, payload: Buffer}}} data
      * @returns
      */
     log(data = {}) {
@@ -51,7 +57,7 @@ class MqttClient {
     }
 
     /**
-     *
+     * Init class
      * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string, logFile: string}} opts
      */
     constructor(opts = {}) {
@@ -118,7 +124,7 @@ class MqttClient {
     }
 
     /**
-     *
+     * Publish a message via mqtt
      * @param {{topic: string, payload: object}} opts
      * @returns
      */
@@ -150,7 +156,7 @@ class MqttClient {
     }
 
     /**
-     *
+     * Subscribe to a topic
      * @param {{topic: string}} opts
      * @returns
      */
@@ -173,6 +179,10 @@ class MqttClient {
         });
     }
 
+    /**
+     * Close a connection
+     * @returns
+     */
     end() {
         if (!this.client) return;
         this.client.end();
