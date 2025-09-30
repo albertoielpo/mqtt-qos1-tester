@@ -5,14 +5,16 @@
   "scripts": {
     "start": "node main.js",
     "start:local": "cp resources/config-personal.json resources/config.json && npm run start",
-    "bundle": "rm -rf dist && pkg . -t latest-linux-x64,latest-win-x64 -o dist/mqtt-qos1-tester && cd dist && mkdir log && mkdir resources && cp ../resources/config.json resources/ && zip -r mqtt-qos1-tester-linux.zip log resources mqtt-qos1-tester-linux && zip -r mqtt-qos1-tester-win.zip log resources mqtt-qos1-tester-win.exe"
+    "bundle": "rm -rf dist && pkg . -t node22-linux-x64,node22-win-x64 -o dist/mqtt-qos1-tester && cd dist && mkdir log && mkdir resources && cp ../resources/config.json resources/ && zip -r mqtt-qos1-tester-linux.zip log resources mqtt-qos1-tester-linux && zip -r mqtt-qos1-tester-win.zip log resources mqtt-qos1-tester-win.exe"
   },
   "author": "Alberto Ielpo",
   "license": "MIT",
   "description": "Mqtt qos 1 tester",
   "dependencies": {
-    "mqtt": "~5.10.3",
-    "pkg": "~5.8.1"
+    "mqtt": "~5.10.3"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "~6.7.0"
   },
   "engines": {
     "node": ">=22",
