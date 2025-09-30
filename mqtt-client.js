@@ -1,6 +1,10 @@
 const mqtt = require("mqtt");
 const fs = require("fs");
 
+// default log file path
+const LOG_DIR = "./log";
+const LOG_FILE_NAME = process.env.LOG_FILE_NAME || "mqtt-client";
+
 class MqttClient {
     client = null; // mqtt instance
 
@@ -20,7 +24,7 @@ class MqttClient {
         }
 
         console.log(str, data.packet?.cmd === "puback" ? "🟢" : ""); // console log
-        fs.appendFile("./log/mqtt-client.log", str + "\n", () => {}); // append to file
+        fs.appendFile(`${LOG_DIR}/${LOG_FILE_NAME}.log`, str + "\n", () => {}); // append to file
     }
 
     /**
