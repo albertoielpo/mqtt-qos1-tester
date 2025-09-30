@@ -27,7 +27,8 @@ function main() {
         username: mqttClientOpts.username,
         password: mqttClientOpts.password,
         clientId: curClientId,
-        logFile: mqttClientOpts.logSenderFile
+        logFile: mqttClientOpts.logSenderFile,
+        consolePrefix: "[S]"
     });
 
     // publish to a topic

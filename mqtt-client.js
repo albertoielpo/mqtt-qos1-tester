@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 class MqttClient {
+    consolePrefix; // prepend this string to any this.log function
     logFile = "./log/mqtt-client.log"; // It can be override using opts.logFile
     client = null; // mqtt instance
 
@@ -50,17 +51,24 @@ class MqttClient {
             }]`;
         }
 
-        console.log(str, data.packet?.cmd === "puback" ? "🟢" : ""); // console log
+        console.log(
+            this.consolePrefix ?? "",
+            str,
+            data.packet?.cmd === "puback" ? "🟢" : ""
+        ); // console log
         fs.appendFile(`${this.logFile}`, str + "\n", () => {}); // append to file
     }
 
     /**
      * Init class
-     * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string, logFile: string}} opts
+     * @param {{protocol: "mqtt" | "mqtts", port: string, host: string, username: string, password: string, clientId: string, logFile: string, consolePrefix: string}} opts
      */
     constructor(opts = {}) {
         if (opts.logFile) {
             this.logFile = this.sanitizeLogPath(opts.logFile);
+        }
+        if (opts.consolePrefix) {
+            this.consolePrefix = opts.consolePrefix;
         }
         console.log(">> Log linked: ", this.logFile);
 
