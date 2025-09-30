@@ -1,5 +1,5 @@
-const sender = require("./main-sender.js").main;
-const receiver = require("./main-receiver.js").main;
+const sender = require("./sender.js").main;
+const receiver = require("./receiver.js").main;
 
 try {
     console.log(">> start");
