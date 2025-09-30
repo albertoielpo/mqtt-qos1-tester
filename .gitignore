@@ -1,0 +1,4 @@
+node_modules/*
+resources/config-personal.json
+Vernmq_test_result.md
+**/*.log

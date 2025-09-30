@@ -1,0 +1,15 @@
+{
+  "name": "mqtt-qos1-tester",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "start:local": "cp resources/config-personal.json resources/config.json && npm run start"
+  },
+  "author": "Alberto Ielpo",
+  "license": "MIT",
+  "description": "Mqtt qos 1 tester",
+  "dependencies": {
+    "mqtt": "~5.10.3"
+  }
+}
