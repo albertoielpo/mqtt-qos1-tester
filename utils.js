@@ -6,8 +6,8 @@ function randId() {
 }
 
 /**
- * Read the config file in a sync way. It simulates require("./resources/config.json").
- * It's used readFileSync for bundle compatibility.
+ * Read the config file in a sync way.
+ * It's used readFileSync for bundle compatibility because the resources folder is outside the bundle.
  * @param {string} path
  */
 function readConfigFile() {

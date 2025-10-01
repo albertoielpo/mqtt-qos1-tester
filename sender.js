@@ -1,4 +1,4 @@
-const MqttClient = require("./mqtt-client");
+const MqttClient = require("./mqtt-client.js");
 const { randId, readConfigFile } = require("./utils.js");
 const mqttClientOpts = readConfigFile();
 
