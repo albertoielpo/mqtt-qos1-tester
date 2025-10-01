@@ -1,14 +1,19 @@
 const path = require("path");
 const fs = require("fs");
 
-function randId() {
-    return Math.floor(Math.random() * 1_000_000);
+/**
+ * Generate a random number between 0 and max.
+ * If max is undefined then use 1_000_000
+ * @param {number} max
+ * @returns
+ */
+function randId(max = 1_000_000) {
+    return Math.floor(Math.random() * max);
 }
 
 /**
  * Read the config file in a sync way.
  * It's used readFileSync for bundle compatibility because the resources folder is outside the bundle.
- * @param {string} path
  */
 function readConfigFile() {
     const isPkg = typeof process.pkg !== "undefined";
