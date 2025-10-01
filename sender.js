@@ -22,10 +22,13 @@ function main() {
         consolePrefix: "[S]"
     });
 
-    process.on("SIGINT", () => {
+    const gracefulEnd = () => {
         mqttClient.end();
         process.exit(0);
-    });
+    };
+
+    process.on("SIGINT", gracefulEnd); // Ctrl+C or kill -2
+    process.on("SIGTERM", gracefulEnd); // standard kill command
 
     // publish to a topic
     const intervalId = setInterval(() => {
@@ -44,7 +47,7 @@ function main() {
             clearInterval(intervalId);
         }
         // then close the connection
-        mqttClient.end();
+        gracefulEnd();
     }, testDuration);
 }
 

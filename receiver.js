@@ -22,10 +22,13 @@ function main() {
         consolePrefix: "[R]"
     });
 
-    process.on("SIGINT", () => {
+    const gracefulEnd = () => {
         mqttClient.end();
         process.exit(0);
-    });
+    };
+
+    process.on("SIGINT", gracefulEnd); // Ctrl+C or kill -2
+    process.on("SIGTERM", gracefulEnd); // standard kill command
 
     // subscribe to a topic
     setTimeout(() => {
@@ -37,7 +40,7 @@ function main() {
     // close client gracefully
     setTimeout(() => {
         // then close the connection
-        mqttClient.end();
+        gracefulEnd();
     }, testDuration);
 }
 
