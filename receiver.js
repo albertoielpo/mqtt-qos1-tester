@@ -1,16 +1,6 @@
-const fs = require("fs");
-const path = require("path");
 const MqttClient = require("./mqtt-client");
-
-const isPkg = typeof process.pkg !== "undefined";
-const baseDir = isPkg ? path.dirname(process.execPath) : __dirname;
-const configPath = path.join(baseDir, "resources", "config.json");
-const configData = fs.readFileSync(configPath, "utf8");
-const mqttClientOpts = JSON.parse(configData);
-
-function randId() {
-    return Math.floor(Math.random() * 1_000_000);
-}
+const { randId, readConfigFile } = require("./utils.js");
+const mqttClientOpts = readConfigFile();
 
 /**
  * Main wrap function

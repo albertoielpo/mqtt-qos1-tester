@@ -34,3 +34,12 @@ Bundle zip file are <code>dist/mqtt-qos1-tester-linux.zip</code> and <code>dist/
 Once extracted edit properly resources/config.json
 
 Do not delete log folder!
+
+## Hooks
+
+Install this pre commit hook inside your local .git folder. This simple script avoid publishing password inside the config.json file
+
+```bash
+chmod a+x pre-commit-hook.sh
+cp pre-commit-hook.sh ./.git/hooks/pre-commit
+```
